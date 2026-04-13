@@ -1,0 +1,91 @@
+# ==========================================
+# Python - Geral e Ambientes Virtuais
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.installed.cfg
+*.egg-info/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg/
+
+# ==========================================
+# FastAPI / SQLAlchemy / Testes
+# ==========================================
+# Arquivos de banco de dados SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de migração do Alembic (opcional: ignore se quiser comitar as migrações)
+# migrations/versions/*.py
+
+# Variáveis de ambiente (Segurança!)
+.env
+.env.local
+.env.*.local
+.secret
+
+# Relatórios de cobertura do pytest
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ==========================================
+# VSCode / IDEs
+# ==========================================
+.vscode/
+# Exceção: é bom comitar configurações recomendadas para o time
+# !.vscode/extensions.json
+# !.vscode/settings.json
+# !.vscode/launch.json
+.idea/
+*.swp
+*.swo
+
+# ==========================================
+# Sistemas Operacionais
+# ==========================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux / macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==========================================
+# Logs
+# ==========================================
+*.log
