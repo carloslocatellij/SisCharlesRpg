@@ -8,11 +8,11 @@ idna==3.11
 iniconfig==2.3.0
 packaging==26.0
 pluggy==1.6.0
-pydantic==2.5.3
-pydantic_core==2.14.6
+pydantic
+pydantic_core
 pytest==8.0.0
 python-dotenv==1.2.2
-SQLAlchemy==2.0.25
+SQLAlchemy>=2.1.0b1
 starlette==0.35.1
 typing_extensions==4.15.0
 uvicorn==0.27.0
