@@ -10,7 +10,7 @@ packaging==26.0
 pluggy==1.6.0
 pydantic==2.5.3
 pydantic_core==2.14.6
-pytest==8.0.0
+pytest==9.0.3
 python-dotenv==1.2.2
 SQLAlchemy==2.0.25
 starlette==0.35.1
