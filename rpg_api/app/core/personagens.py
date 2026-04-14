@@ -168,24 +168,7 @@ class Personagem:
             resultado["alvo_morreu"] = evento_dano["morreu"]
 
         return resultado
-
-    # def lancar_magia(self, nome_magia: str, custo_pm: int, alvo: 'Personagem') -> Dict[str, Any]:
-    #     """Mecânica base para gastar PM e gerar um efeito no alvo."""
-    #     if self.pm_atual < custo_pm:
-    #         return {"sucesso": False, "motivo": "Mana insuficiente"}
-            
-    #     self.pm_atual -= custo_pm
-        
-    #     # O dano/efeito mágico varia, mas aqui estruturamos o gasto e o evento base
-    #     return {
-    #         "sucesso": True, "magia": nome_magia, "pm_restante": self.pm_atual,
-    #         "alvo": alvo.nome
-    #     }
-        
-    # def finalizar_turno(self):
-    #     """Processa efeitos ativos no fim da rodada."""
-    #     # Aqui, futuramente, iteramos sobre self.efeitos_ativos (ex: dano de veneno)
-    #     pass
+    
     
     # ==========================================
     # GERENCIAMENTO DE EFEITOS

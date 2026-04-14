@@ -47,8 +47,15 @@ def criar_raca(db):
     nome = input("Nome da Raça: ")
     forca = int(input("Bônus de Força: "))
     agilidade = int(input("Bônus de Agilidade: "))
+    resistencia = int(input("Bônus de Resistência: "))
+    percepcao =  int(input("Bônus de Percepção: "))
+    exuberancia =  int(input("Bônus de Exuberância: "))
     
-    nova_raca = RacaDB(nome=nome, bonus_atributos={"forca": forca, "agilidade": agilidade})
+    nova_raca = RacaDB(nome=nome, bonus_atributos={"forca": forca,
+                                                   "agilidade": agilidade,
+                                                   "resistencia": resistencia,
+                                                   "percepcao" : percepcao,
+                                                   "exuberancia": exuberancia})
     db.add(nova_raca)
     db.commit()
     print(f"✅ Raça '{nome}' salva com sucesso no Banco de Dados!")
@@ -59,7 +66,18 @@ def criar_classe(db):
     caminho = input("Caminho de Magia Primário (ex: fogo, ar): ")
     pontos = int(input(f"Pontos no caminho {caminho}: "))
     
-    nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos={caminho: pontos})
+    forca = int(input("Bônus de Força: "))
+    agilidade = int(input("Bônus de Agilidade: "))
+    resistencia = int(input("Bônus de Resistência: "))
+    percepcao =  int(input("Bônus de Percepção: "))
+    exuberancia =  int(input("Bônus de Exuberância: "))
+    
+    nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos={caminho: pontos}, bonus_atributos={"forca": forca,
+                                                   "agilidade": agilidade,
+                                                   "resistencia": resistencia,
+                                                   "percepcao" : percepcao,
+                                                   "exuberancia": exuberancia})
+    
     db.add(nova_classe)
     db.commit()
     print(f"✅ Classe '{nome}' salva com sucesso!")

@@ -1,10 +1,15 @@
+
 # Sistema de jogo de RPG de mesa baseado em turnos
 
-- Permite a criação raças e classes de RPG para a criação de persongens
-
+- Permite a criação de personagens para jogos de RPG com seus atributos, características, habilidades, raças e classes, etc...
+- Permite a criação novas de raças com suas características próprias.
+- Permite a criação de classes com suas características, atributos, habilidades próprias, etc ...
+- Permite a criação de itens, equimapentos, armas e armaduras para equipar os personagens.
+- Permite uma mecânica de batalha com as ações dos persongens na qual os atributos serão calculados e comparados para determinar o resultado.
+- Permite simulações das batalhas.
 
 ## Sistema de Personagens
-- A Raça e a Classe deverão ter propriedades que serão usadas para a composição da classe.
+- A Raça e a Classe deverão ter propriedades que serão usadas para a composição do personagem.
 
 ### Raça
 - A Raça tem nome e um dicionário de bonus de atributos a ser aplicados ao Personagem.
@@ -18,7 +23,6 @@
 "forca": forca_base, "agilidade": agilidade_base, "resistencia": res_base, "percepcao": perc_base,    "exuberancia": exub_base). Além de ter mão_direta, mão_esquerda, armadura, itens de corpo e equipamentos. 
 - O Personagem tem também uma lista de efeitos ativos.
 - Boa parte do mecanismo de funcionamento do sistema vem dos métodos do Personagem, ou seja, um conjunto de ações (funções da class) que consistêm na forma que o sistema utiliza a class Personagem (atualizar_atributos_totais, _calcular_status_derivados, reset_status, calcular_defesa_esquiva, receber_dano, receber_dano_de_efeito e finalizar_turno) e também ações que podem ser usadas pelo sistema ou pelo usuário (atacar, lancar_magia, usar_item)
-
 
 ## Sistema de Magia, Habilidade e Efeitos:
 
@@ -39,7 +43,6 @@
 No dicionário de Caminhos de Magias da ClasseRPG as chaves são os caminhos ("luz", "trevas", "fogo", "água", "ar" e "terra") e os valores são os pontos que o personagem tem no caminho (padrão=0).
 - Os valores em pontos nos caminhos serão usados para verificar se o personagem pode possuir determinada magia: Na criação do objeto Personagem deve haver uma verificação para cada Magia ou Habilidade da Classe atribuida se as caracteristicas/atributos passados ao Personagem em questão atendem aos requistos da Magia/Habilidade, levantando uma Exessão em caso de não atendimento. 
 
-
 ## Sistema de Equipamentos
 - O persongem também podera ser equipado com Itens, Armas, Armaduras e Escudo.
 - Item terá nome, peso e uma representação visual por emoji
@@ -53,5 +56,4 @@ Escudo herda de item e tem a propriedade defesa_extra.
 ### É um Simulador de Combate independente em Grupo. Neste simulador deverão ser passados os personagens aliados e os oponentes. A iniciativa será rolada para todos e o combate ira ocorrer nesta sequência até o final( todos os oponentes ou todos os aliados serem terem seus pontos de vida zerados ou a baixo de zero) 
 - Contém um simulador que simula uma batalha individual e imprime os resultados dos acontecimentos de cada turno.
 - Contém um simulador estatísco que recebe um número de batalhas (padrão = 100), realiza as simulações silenciosas, coleta resultados dos eventos por personagem (número de acertos, dano causa, cura causada, número de defesas, mortes causadas e batalhas sobrevividas), e o número de vitorias e derrotas de cada time.
-
 
