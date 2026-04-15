@@ -8,7 +8,8 @@ def setup_module(module):
 
 # Esta rotina roda DEPOIS dos testes. Ela limpa/apaga as tabelas para o próximo teste ser limpo.
 def teardown_module(module):
-    Base.metadata.drop_all(bind=engine)
+    #Base.metadata.drop_all(bind=engine)
+    pass
 
 def test_salvar_e_recuperar_arma_no_banco():
     # 1. Abre a sessão com o banco

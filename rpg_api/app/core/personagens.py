@@ -129,6 +129,8 @@ class Personagem:
         return {
             "dano_recebido": dano_real,
             "dano_bloqueado": defesa_total,
+            "absorcao_dados": absorcao_dados,
+            "bonus_armadura": bonus_armadura,
             "pv_restante": self.pv_atual,
             "morreu": self.pv_atual <= 0
         }
@@ -142,18 +144,21 @@ class Personagem:
         """Realiza a mecânica completa de ataque contra um alvo."""
         # 1. Identifica a arma ou usa ataque desarmado
         arma = self.mao_direita
+        arma_nome = arma.nome if isinstance(arma, Arma) else "Ataque Desarmado"
         tipo_atq = arma.tipo if isinstance(arma, Arma) else "corpo"
         dano_arma = arma.dano if isinstance(arma, Arma) else 0
         
         # 2. Modificadores e Rolagem de Acerto (3d6)
         modificador = self.mod_atq_corpo if tipo_atq == "corpo" else self.mod_atq_distancia
-        ataque_total = self._rolar_d6(3) + modificador
+        rolagem_ataque = self._rolar_d6(3)
+        ataque_total = rolagem_ataque + modificador
         defesa_alvo = alvo.calcular_defesa_esquiva()
         
         acertou = ataque_total > defesa_alvo
         resultado = {
             "atacante": self.nome, "alvo": alvo.nome,
-            "acertou": acertou, "ataque_total": ataque_total,
+            "arma_nome": arma_nome,
+            "acertou": acertou, "ataque_total": ataque_total, "rolagem_ataque": rolagem_ataque,
             "defesa_alvo": defesa_alvo, "dano_causado": 0
         }
 
@@ -165,6 +170,11 @@ class Personagem:
             # Delega a responsabilidade de sofrer o dano para o alvo
             evento_dano = alvo.receber_dano(dano_bruto)
             resultado["dano_causado"] = evento_dano["dano_recebido"]
+            resultado["dano_bruto"] = dano_bruto
+            resultado["absorcao_dados"] = evento_dano["absorcao_dados"]
+            resultado["bonus_armadura"] = evento_dano["bonus_armadura"]
+            resultado["defesa_total"] = evento_dano["dano_bloqueado"]
+            resultado["pv_restante"] = evento_dano["pv_restante"]
             resultado["alvo_morreu"] = evento_dano["morreu"]
 
         return resultado

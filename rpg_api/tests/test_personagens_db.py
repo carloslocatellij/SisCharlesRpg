@@ -66,7 +66,7 @@ def test_personagem_com_equipamentos():
     db = SessionLocal()
     
     # 1. Criamos a Base (Raça e Classe)
-    raca = RacaDB(nome="Humano")
+    raca = RacaDB(nome="human")
     classe = ClasseRPGDB(nome="Guerreiro")
     db.add_all([raca, classe])
     db.commit()

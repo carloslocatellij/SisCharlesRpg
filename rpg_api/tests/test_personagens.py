@@ -13,7 +13,7 @@ def test_criacao_raca_e_classe():
 
 def test_calculo_atributos_totais_personagem():
     """Testa se o Personagem soma corretamente os atributos base + raça + classe."""
-    raca_elfo = Raca(nome="Elfo", bonus_atributos={"agilidade": 2, "percepcao": 1})
+    raca_elfo = Raca(nome="elven", bonus_atributos={"agilidade": 2, "percepcao": 1})
     classe_mago = ClasseRPG(nome="Mago", bonus_atributos={"exuberancia": 2})
     
     # Herói com tudo zero na base, para isolar e testar os bônus
@@ -29,7 +29,7 @@ def test_calculo_atributos_totais_personagem():
 
 def test_formulas_status_derivados():
     """Testa a integridade das fórmulas matemáticas de PV e PM do MANUAL.md."""
-    raca_humano = Raca(nome="Humano", bonus_atributos={})
+    raca_humano = Raca(nome="human", bonus_atributos={})
     classe_comum = ClasseRPG(nome="Camponês", bonus_atributos={})
     
     # Nivel 1, Todos atributos = 2
@@ -49,7 +49,7 @@ def test_formulas_status_derivados():
 
 def test_equipamento_inventario():
     """Garante que a agregação com a camada de equipamentos funciona."""
-    raca = Raca(nome="Humano")
+    raca = Raca(nome="human")
     classe = ClasseRPG(nome="Guerreiro")
     heroi = Personagem("Arthur", 1, raca, classe, 2, 2, 2, 2, 2)
     
@@ -65,7 +65,7 @@ def test_equipamento_inventario():
     
 def test_receber_dano():
     """Testa se o cálculo de dano reduz a vida e se o bloqueio funciona."""
-    raca = Raca("Humano")
+    raca = Raca("human")
     classe = ClasseRPG("Guerreiro")
     
     # Criamos um alvo com PV alto e 0 de resistência para isolar a armadura no teste
@@ -83,7 +83,7 @@ def test_receber_dano():
 
 def test_sistema_de_magia_mana():
     """Testa o gasto de PM ao lançar magias com a nova assinatura de objetos."""
-    raca = Raca("Elfo")
+    raca = Raca("elven")
     classe = ClasseRPG("Mago")
     mago = Personagem("Gandalf", 1, raca, classe, 1, 1, 1, 3, 3) # Exuberância 3
     alvo = Personagem("Orc", 1, raca, classe, 1, 1, 1, 1, 1)
@@ -106,7 +106,7 @@ def test_sistema_de_magia_mana():
 
 def test_ataque_integracao_basica(monkeypatch):
     """Teste de integração entre atacante e alvo. Usa monkeypatch para congelar os dados."""
-    raca = Raca("Humano")
+    raca = Raca("human")
     classe = ClasseRPG("Guerreiro")
     
     atacante = Personagem("Atacante", 1, raca, classe, 2, 2, 2, 2, 2)
