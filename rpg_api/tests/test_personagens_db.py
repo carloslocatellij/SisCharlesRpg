@@ -15,7 +15,7 @@ def test_criar_personagem_com_relacionamentos():
     db = SessionLocal()
     
     # 1. Criamos e salvamos uma Raça
-    raca_orc = RacaDB(nome="Orc", bonus_atributos={"forca": 2, "agilidade": -1})
+    raca_orc = RacaDB(nome="orco", bonus_atributos={"forca": 2, "agilidade": -1})
     db.add(raca_orc)
     
     # 2. Criamos e salvamos uma Classe
@@ -54,7 +54,7 @@ def test_criar_personagem_com_relacionamentos():
     
     # Validamos a MÁGICA DOS RELACIONAMENTOS:
     # O SQLAlchemy buscou automaticamente a raça e a classe vinculadas!
-    assert personagem_salvo.raca.nome == "Orc"
+    assert personagem_salvo.raca.nome == "orco"
     assert personagem_salvo.raca.bonus_atributos["forca"] == 2
     
     assert personagem_salvo.classe.nome == "Bárbaro"
