@@ -1,148 +1,39 @@
 import os
 from app.db.database import SessionLocal, engine, Base
-from app.models.personagens_db import RacaDB, ClasseRPGDB, PersonagemDB
+from app.controllers.game_controller import GameController as GC
+from app.models.personagens_db import PersonagemDB
 from app.models.equipamentos_db import ItemDB
-from app.core.personagens import Personagem, Raca, ClasseRPG
-from app.core.simulador import SimuladorCombate
 
 # Garante que as tabelas existem (útil para rodar o CLI a primeira vez)
 Base.metadata.create_all(bind=engine)
 
-# ==========================================
-# TRADUTOR (MAPPER): BANCO DE DADOS -> DOMÍNIO
-# ==========================================
-def converter_para_dominio(db_char: PersonagemDB) -> Personagem:
-    """Converte um modelo do SQLAlchemy para a Entidade pura do RPG."""
-    # 1. Recria a Raça do Domínio
-    raca_domain = Raca(nome=db_char.raca.nome, bonus_atributos=db_char.raca.bonus_atributos)
+def menu_equipar(ctrl: GC):
+    print("\n--- 🗡️ EQUIPAR PERSONAGEM ---")
+    chars = ctrl.db.query(PersonagemDB).all()
+    for p in chars: print(f"[{p.id}] {p.nome}")
+    char_id = int(input("ID do Personagem: "))
     
-    # 2. Recria a Classe do Domínio
-    classe_domain = ClasseRPG(
-        nome=db_char.classe.nome, 
-        bonus_caminhos=db_char.classe.bonus_caminhos,
-        habilidades=db_char.classe.habilidades,
-        bonus_atributos=db_char.classe.bonus_atributos
-    )
+    itens = ctrl.db.query(ItemDB).all()
+    for i in itens: print(f"[{i.id}] {i.nome} ({i.categoria})")
+    item_id = int(input("ID do Item: "))
     
-    # 3. Recria o Personagem
-    personagem = Personagem(
-        nome=db_char.nome,
-        nivel=db_char.nivel,
-        raca=raca_domain,
-        classe_rpg=classe_domain,
-        forca_base=db_char.forca_base,
-        agilidade_base=db_char.agilidade_base,
-        res_base=db_char.resistencia_base,
-        perc_base=db_char.percepcao_base,
-        exub_base=db_char.exuberancia_base
-    )
-    return personagem
+    slot = input("Slot (direita/esquerda/armadura): ").lower()
+    print(ctrl.equipar_item(char_id, item_id, slot))
 
-# ==========================================
-# FUNÇÕES DE INTERAÇÃO DO CLI
-# ==========================================
-
-def criar_raca(db):
-    print("\n--- 🧬 CRIAR NOVA RAÇA ---")
-    nome = input("Nome da Raça: ")
-    forca = int(input("Bônus de Força: "))
-    agilidade = int(input("Bônus de Agilidade: "))
-    resistencia = int(input("Bônus de Resistência: "))
-    percepcao =  int(input("Bônus de Percepção: "))
-    exuberancia =  int(input("Bônus de Exuberância: "))
+def menu_arena(ctrl: GC):
+    print("\n--- ⚔️ ARENA DE SIMULAÇÃO ---")
+    aliados = [int(i.strip()) for i in input("IDs Aliados (ex: 1,2): ").split(",")]
+    oponentes = [int(i.strip()) for i in input("IDs Oponentes (ex: 3,4): ").split(",")]
+    qtd = int(input("Quantidade de batalhas (1 para detalhado): "))
     
-    nova_raca = RacaDB(nome=nome, bonus_atributos={"forca": forca,
-                                                   "agilidade": agilidade,
-                                                   "resistencia": resistencia,
-                                                   "percepcao" : percepcao,
-                                                   "exuberancia": exuberancia})
-    db.add(nova_raca)
-    db.commit()
-    print(f"✅ Raça '{nome}' salva com sucesso no Banco de Dados!")
-
-def criar_classe(db):
-    print("\n--- 📜 CRIAR NOVA CLASSE ---")
-    nome = input("Nome da Classe: ")
-    caminho = input("Caminho de Magia Primário (ex: fogo, ar): ")
-    pontos = int(input(f"Pontos no caminho {caminho}: "))
+    resultado = ctrl.simular_arena(aliados, oponentes, qtd)
     
-    forca = int(input("Bônus de Força: "))
-    agilidade = int(input("Bônus de Agilidade: "))
-    resistencia = int(input("Bônus de Resistência: "))
-    percepcao =  int(input("Bônus de Percepção: "))
-    exuberancia =  int(input("Bônus de Exuberância: "))
-    
-    nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos={caminho: pontos}, bonus_atributos={"forca": forca,
-                                                   "agilidade": agilidade,
-                                                   "resistencia": resistencia,
-                                                   "percepcao" : percepcao,
-                                                   "exuberancia": exuberancia})
-    
-    db.add(nova_classe)
-    db.commit()
-    print(f"✅ Classe '{nome}' salva com sucesso!")
-
-def criar_personagem(db):
-    print("\n--- 👤 CRIAR NOVO PERSONAGEM ---")
-    
-    # Lista Raças
-    racas = db.query(RacaDB).all()
-    print("\nRaças disponíveis:")
-    for r in racas: print(f"[{r.id}] {r.nome}")
-    raca_id = int(input("ID da Raça escolhida: "))
-    
-    # Lista Classes
-    classes = db.query(ClasseRPGDB).all()
-    print("\nClasses disponíveis:")
-    for c in classes: print(f"[{c.id}] {c.nome}")
-    classe_id = int(input("ID da Classe escolhida: "))
-    
-    nome = input("\nNome do Personagem: ")
-    forca = int(input("Força Base (0 a 5): "))
-    agilidade = int(input("Agilidade Base (0 a 5): "))
-    resistencia = int(input("Resistência Base (0 a 5): "))
-    percepcao = int(input("Percepção Base (0 a 5): "))
-    exuberancia = int(input("Exuberância Base (0 a 5): "))
-    
-    novo_personagem = PersonagemDB(
-        nome=nome, raca_id=raca_id, classe_id=classe_id,
-        forca_base=forca, agilidade_base=agilidade, resistencia_base=resistencia,
-        percepcao_base=percepcao, exuberancia_base=exuberancia
-    )
-    db.add(novo_personagem)
-    db.commit()
-    print(f"✅ Herói '{nome}' forjado e salvo no Banco de Dados!")
-
-def simular_arena(db):
-    print("\n--- ⚔️ ARENA DE SIMULAÇÃO ⚔️ ---")
-    personagens = db.query(PersonagemDB).all()
-    
-    if len(personagens) < 2:
-        print("⚠️ Crie pelo menos 2 personagens primeiro!")
-        return
-
-    print("\nLutadores disponíveis:")
-    for p in personagens:
-        print(f"[{p.id}] {p.nome} (Nível {p.nivel} {p.raca.nome} {p.classe.nome})")
-        
-    ids_aliados = input("\nDigite os IDs da Equipa Aliada (separados por vírgula): ")
-    ids_oponentes = input("Digite os IDs da Equipa Oponente (separados por vírgula): ")
-    
-    # Converte a string "1,2" numa lista de inteiros [1, 2]
-    lista_aliados_id = [int(i.strip()) for i in ids_aliados.split(",")]
-    lista_oponentes_id = [int(i.strip()) for i in ids_oponentes.split(",")]
-    
-    # Busca no banco e converte para o Domínio
-    equipa_aliada = [converter_para_dominio(db.query(PersonagemDB).get(i)) for i in lista_aliados_id]
-    equipa_oponente = [converter_para_dominio(db.query(PersonagemDB).get(i)) for i in lista_oponentes_id]
-    
-    # Inicia o Simulador que construímos!
-    simulador = SimuladorCombate(equipa_aliada, equipa_oponente)
-    relatorio = simulador.simular_batalha(silencioso=False)
-    
-    print("\n📊 ESTATÍSTICAS DA BATALHA:")
-    for nome, stats in relatorio["estatisticas"].items():
-        print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
+    if qtd == 1:
+        print(f"\n🏆 Vencedor: {resultado['vencedor']}")
+    else:
+        print(f"\n📊 Resultados de {qtd} batalhas:")
+        print(f"Aliados: {resultado['vitorias_aliados']} vitórias")
+        print(f"Oponentes: {resultado['vitorias_oponentes']} vitórias")
 
 # ==========================================
 # LOOP PRINCIPAL DO PROGRAMA
@@ -157,17 +48,19 @@ def main():
         print("1. Criar Raça")
         print("2. Criar Classe")
         print("3. Criar Personagem")
-        print("4. Simular Batalha na Arena")
-        print("5. Sair")
+        print("4. Equipar Item")
+        print("5. Simular Batalha na Arena")
+        print("6. Sair")
         
         escolha = input("Escolha uma opção: ")
         
         try:
-            if escolha == '1': criar_raca(db)
-            elif escolha == '2': criar_classe(db)
-            elif escolha == '3': criar_personagem(db)
-            elif escolha == '4': simular_arena(db)
-            elif escolha == '5': 
+            if escolha == '1': GC.criar_raca(db)
+            elif escolha == '2': GC.criar_classe(db)
+            elif escolha == '3': GC.criar_personagem(db)
+            elif escolha == '4': menu_equipar(GC(db))
+            elif escolha == '5': menu_arena(GC(db))
+            elif escolha == '6': 
                 print("Encerrando o sistema...")
                 break
             else:

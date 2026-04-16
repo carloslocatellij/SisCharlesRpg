@@ -67,7 +67,7 @@ def test_personagem_com_equipamentos():
     
     # 1. Criamos a Base (Raça e Classe)
     raca = RacaDB(nome="human")
-    classe = ClasseRPGDB(nome="Guerreiro")
+    classe = ClasseRPGDB(nome="warrior")
     db.add_all([raca, classe])
     db.commit()
     
