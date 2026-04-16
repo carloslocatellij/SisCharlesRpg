@@ -75,93 +75,82 @@ class GameController:
     # FUNÇÕES DE INTERAÇÃO DO CLI
     # ==========================================
 
-    def criar_raca(db):
-        print("\n--- 🧬 CRIAR NOVA RAÇA ---")
-        nome = input("Nome da Raça: ")
-        forca = int(input("Bônus de Força: "))
-        agilidade = int(input("Bônus de Agilidade: "))
-        resistencia = int(input("Bônus de Resistência: "))
-        percepcao =  int(input("Bônus de Percepção: "))
-        exuberancia =  int(input("Bônus de Exuberância: "))
-        
-        nova_raca = RacaDB(nome=nome, bonus_atributos={"forca": forca,
-                                                    "agilidade": agilidade,
-                                                    "resistencia": resistencia,
-                                                    "percepcao" : percepcao,
-                                                    "exuberancia": exuberancia})
-        db.add(nova_raca)
-        db.commit()
-        print(f"✅ Raça '{nome}' salva com sucesso no Banco de Dados!")
+    def criar_raca(db, nome, atributos):
 
-    def criar_classe(db):
-        print("\n--- 📜 CRIAR NOVA CLASSE ---")
-        nome = input("Nome da Classe: ")
-        caminho = input("Caminho de Magia Primário (ex: fogo, ar): ")
-        pontos = int(input(f"Pontos no caminho {caminho}: "))
+        nova_raca = RacaDB(nome=nome, bonus_atributos={"forca": atributos.get('forca'),
+                                                    "agilidade": atributos.get('agilidade'),
+                                                    "resistencia":atributos.get('resistencia') ,
+                                                    "percepcao" : atributos.get('percepcao'),
+                                                    "exuberancia": atributos.get('exuberancia')})
+        try:
+            db.add(nova_raca)
+            db.commit()
+            return f"✅ Raça '{nome}' salva com sucesso no Banco de Dados!"
+        except Exception as e:
+            return f"Não foi possível registrar a raça devido ao ERRO: {e}"
         
-        forca = int(input("Bônus de Força: "))
-        agilidade = int(input("Bônus de Agilidade: "))
-        resistencia = int(input("Bônus de Resistência: "))
-        percepcao =  int(input("Bônus de Percepção: "))
-        exuberancia =  int(input("Bônus de Exuberância: "))
-        
-        nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos={caminho: pontos}, bonus_atributos={"forca": forca,
-                                                    "agilidade": agilidade,
-                                                    "resistencia": resistencia,
-                                                    "percepcao" : percepcao,
-                                                    "exuberancia": exuberancia})
-        
-        db.add(nova_classe)
-        db.commit()
-        print(f"✅ Classe '{nome}' salva com sucesso!")
 
-    def criar_personagem(db):
-        print("\n--- 👤 CRIAR NOVO PERSONAGEM ---")
+    def criar_classe(db, nome, caminho, pontos, atributos):
+                
+        nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos={caminho: pontos}, bonus_atributos={"forca": atributos.get('forca'),
+                                                    "agilidade": atributos.get('agilidade'),
+                                                    "resistencia":atributos.get('resistencia') ,
+                                                    "percepcao" : atributos.get('percepcao'),
+                                                    "exuberancia": atributos.get('exuberancia')})
+        try:
+            db.add(nova_classe)
+            db.commit()
+            return f"✅ Classe '{nome}' salva com sucesso no Banco de Dados!"
+        except Exception as e:
+            return f"Não foi possível registrar a classe devido ao ERRO: {e}"
         
-        # Lista Raças
-        racas = db.query(RacaDB).all()
-        print("\nRaças disponíveis:")
-        for r in racas: print(f"[{r.id}] {r.nome}")
-        raca_id = int(input("ID da Raça escolhida: "))
-        
-        # Lista Classes
-        classes = db.query(ClasseRPGDB).all()
-        print("\nClasses disponíveis:")
-        for c in classes: print(f"[{c.id}] {c.nome}")
-        classe_id = int(input("ID da Classe escolhida: "))
-        
-        nome = input("\nNome do Personagem: ")
-        forca = int(input("Força Base (0 a 5): "))
-        agilidade = int(input("Agilidade Base (0 a 5): "))
-        resistencia = int(input("Resistência Base (0 a 5): "))
-        percepcao = int(input("Percepção Base (0 a 5): "))
-        exuberancia = int(input("Exuberância Base (0 a 5): "))
+
+    def criar_personagem(db, nome, raca_id, classe_id, atributos):
         
         novo_personagem = PersonagemDB(
             nome=nome, raca_id=raca_id, classe_id=classe_id,
-            forca_base=forca, agilidade_base=agilidade, resistencia_base=resistencia,
-            percepcao_base=percepcao, exuberancia_base=exuberancia
-        )
-        db.add(novo_personagem)
-        db.commit()
-        print(f"✅ Herói '{nome}' forjado e salvo no Banco de Dados!")
+            forca_base=atributos.get('forca'),
+            agilidade_base=atributos.get('agilidade'),
+            resistencia_base=atributos.get('resistencia'),
+            percepcao_base=atributos.get('percepcao'),
+            exuberancia_base=atributos.get('exuberancia'))
+        try:
+            db.add(novo_personagem)
+            db.commit()
+            return f"✅ Personagem '{nome}' forjado e salvo com sucesso no Banco de Dados!"
+        except Exception as e:
+            return f"Não foi possível registrar o personagem devido ao ERRO: {e}"
+        
+    
+    def criar_item(db, nome, categoria, emoji, dano=None, tipo_ataque=None, defesa=None, peso=1):
+        
+        novo_item = ItemDB(nome=nome, categoria=categoria, emoji=emoji,
+                           dano=dano, tipo_ataque=tipo_ataque, defesa=defesa, peso=peso)
+        try:
+            db.add(novo_item)
+            db.commit()
+            return f"✅ Item '{nome}' forjado e salvo com sucesso no Banco de Dados!"
+        except Exception as e:
+            return f"Não foi possível registrar o item devido ao ERRO: {e}"
 
-    def simular_arena(ids_aliados: List[int], ids_oponentes: List[int], num_batalhas: int = 1):
+
+def simular_arena(db, ids_aliados: List[int], ids_oponentes: List[int], num_batalhas: int = 1):
+    
+    
+    # Busca no banco e converte para o Domínio
+    equipa_aliada = [GameController.converter_para_dominio(db.query(PersonagemDB).get(i)) for i in ids_aliados]
+    equipa_oponente = [GameController.converter_para_dominio(db.query(PersonagemDB).get(i)) for i in ids_oponentes]
+    
+    # Inicia o Simulador que construímos!
+    simulador = SimuladorCombate(equipa_aliada, equipa_oponente)
+    
+    if num_batalhas == 1:
+        return simulador.simular_batalha(silencioso=False)
+    else:
+        print("\n📊 ESTATÍSTICAS DA BATALHA:")
         
-        
-        # Busca no banco e converte para o Domínio
-        equipa_aliada = [self.converter_para_dominio(self.db.query(PersonagemDB).get(i)) for i in ids_aliados]
-        equipa_oponente = [self.converter_para_dominio(self.db.query(PersonagemDB).get(i)) for i in ids_oponentes]
-        
-        # Inicia o Simulador que construímos!
-        simulador = SimuladorCombate(equipa_aliada, equipa_oponente)
-        
-        if num_batalhas == 1:
-            return simulador.simular_batalha(silencioso=False)
-        else:
-            print("\n📊 ESTATÍSTICAS DA BATALHA:")
-            for nome, stats in relatorio["estatisticas"].items():
-                print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
-            return simulador.simular_multiplas_batalhas(num_batalhas, silencioso=True)
+        # for nome, stats in relatorio["estatisticas"].items():
+        #     print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
+        return simulador.simular_multiplas_batalhas(num_batalhas)
         
         
