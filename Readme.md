@@ -8,15 +8,20 @@ O jogador poderá montar uma ficha de personagem informando seu Nome, Nivel, Cla
 Para usar a versão CLI:
 
 1 - Instale o git.
+
 2 - Em seu computador escolha uma pasta para o jogo e faça: 
 `git clone https://github.com/carloslocatellij/SisCharlesRpg`
+
 3 - Instale o python. (Não vou ensinar).
+
 4 - Isole e Baixe as requerimentos:
 - crie um ambiente virtural (opicional) com:
 `python -m venv .venv`
 - ative o ambiente com:
 windos `.\.venv\Scripts\activate` linux `source .venv/bin/activate`
+
 4.1 - Baixe e instale:
 `pip install -r requirements.txt`
+
 4 Na pasta do projeto rode:
 `python ./rpg_api/main_cli.py`
