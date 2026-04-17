@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
-from app.db.database import get_db
 from app.models.personagens_db import PersonagemDB, RacaDB, ClasseRPGDB
 from app.models.equipamentos_db import ItemDB
 from app.core.personagens import Personagem, Raca, ClasseRPG
@@ -24,7 +23,7 @@ class GameController:
             nome=db_char.classe.nome, 
             bonus_caminhos=db_char.classe.bonus_caminhos,
             habilidades=db_char.classe.habilidades,
-            bonus_atributos=db_char.classe.bonus_atributos
+            #bonus_atributos=db_char.classe.bonus_atributos
         )
         
         # 3. Recria o Personagem
@@ -90,13 +89,18 @@ class GameController:
             return f"Não foi possível registrar a raça devido ao ERRO: {e}"
         
 
-    def criar_classe(db, nome, caminho, pontos, atributos):
-                
-        nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos={caminho: pontos}, bonus_atributos={"forca": atributos.get('forca'),
-                                                    "agilidade": atributos.get('agilidade'),
-                                                    "resistencia":atributos.get('resistencia') ,
-                                                    "percepcao" : atributos.get('percepcao'),
-                                                    "exuberancia": atributos.get('exuberancia')})
+    def criar_classe(db, nome, caminho, pontos):
+        if caminho == None or pontos == None:
+            bonus_caminhos = {}
+        else:
+            bonus_caminhos = {caminho: pontos}
+            
+        nova_classe = ClasseRPGDB(nome=nome, bonus_caminhos=bonus_caminhos,)
+                                #   bonus_atributos={"forca": atributos.get('forca'),
+                                #                     "agilidade": atributos.get('agilidade'),
+                                #                     "resistencia":atributos.get('resistencia') ,
+                                #                     "percepcao" : atributos.get('percepcao'),
+                                #                     "exuberancia": atributos.get('exuberancia')})
         try:
             db.add(nova_classe)
             db.commit()
@@ -114,6 +118,7 @@ class GameController:
             resistencia_base=atributos.get('resistencia'),
             percepcao_base=atributos.get('percepcao'),
             exuberancia_base=atributos.get('exuberancia'))
+        
         try:
             db.add(novo_personagem)
             db.commit()
@@ -136,10 +141,13 @@ class GameController:
 
 def simular_arena(db, ids_aliados: List[int], ids_oponentes: List[int], num_batalhas: int = 1):
     
-    
+
     # Busca no banco e converte para o Domínio
     equipa_aliada = [GameController.converter_para_dominio(db.query(PersonagemDB).get(i)) for i in ids_aliados]
     equipa_oponente = [GameController.converter_para_dominio(db.query(PersonagemDB).get(i)) for i in ids_oponentes]
+    
+    for person in equipa_aliada + equipa_oponente:
+        print(person)
     
     # Inicia o Simulador que construímos!
     simulador = SimuladorCombate(equipa_aliada, equipa_oponente)
@@ -149,8 +157,9 @@ def simular_arena(db, ids_aliados: List[int], ids_oponentes: List[int], num_bata
     else:
         print("\n📊 ESTATÍSTICAS DA BATALHA:")
         
-        # for nome, stats in relatorio["estatisticas"].items():
-        #     print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
+        for nome, stats in relatorio["estatisticas"].items():
+            print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
+            
         return simulador.simular_multiplas_batalhas(num_batalhas)
         
         

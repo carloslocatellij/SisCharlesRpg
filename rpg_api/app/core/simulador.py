@@ -116,8 +116,9 @@ class SimuladorCombate:
         if not silencioso:
             print(f"\n🏆 FIM DE COMBATE! Vencedor: {vencedor}\n")
             print("📊 ESTATÍSTICAS DA BATALHA:")
-            for nome, stats in estatisticas.items():
-                print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
+            if len(estatisticas) > 0:
+                for nome, stats in estatisticas.items():
+                    print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
             
         return {"vencedor": vencedor, "estatisticas": estatisticas, "sobreviventes": self._obter_vivos(aliados + oponentes)}
 
@@ -142,15 +143,16 @@ class SimuladorCombate:
                 vitorias_oponentes += 1
                 
             # Somar resultados parciais ao total
-            for nome, stats in relatorio["estatisticas"].items():
-                stats_totais[nome]["dano_total"] += stats["dano_causado"]
-                stats_totais[nome]["abates"] += stats["abates"]
-                stats_totais[nome]["tentativas"] += stats["tentativas"]
-                stats_totais[nome]["acertos"] += stats["acertos"]
-                
-            # Contar quem ficou de pé
-            for sobrevivente in relatorio["sobreviventes"]:
-                stats_totais[sobrevivente.nome]["sobreviveu"] += 1
+            if len(relatorio.get("estatisticas")) > 0:
+                for nome, stats in relatorio["estatisticas"].items():
+                    stats_totais[nome]["dano_total"] += stats["dano_causado"]
+                    stats_totais[nome]["abates"] += stats["abates"]
+                    stats_totais[nome]["tentativas"] += stats["tentativas"]
+                    stats_totais[nome]["acertos"] += stats["acertos"]
+                    
+                # Contar quem ficou de pé
+                for sobrevivente in relatorio["sobreviventes"]:
+                    stats_totais[sobrevivente.nome]["sobreviveu"] += 1
                 
         return {
             "num_simulacoes": num_simulacoes,

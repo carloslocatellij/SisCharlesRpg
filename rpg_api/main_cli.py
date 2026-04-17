@@ -4,9 +4,13 @@ from app.controllers.game_controller import GameController as GC
 from app.controllers.game_controller import simular_arena
 from app.models.personagens_db import PersonagemDB, RacaDB, ClasseRPGDB
 from app.models.equipamentos_db import ItemDB
+from rich.console import Console
+console = Console()
+print = console.print
 
 # Garante que as tabelas existem (útil para rodar o CLI a primeira vez)
 Base.metadata.create_all(bind=engine)
+barrinha = "="*40
 
 def menu_criar_raca(db):
         print("\n--- 🧬 CRIAR NOVA RAÇA ---")
@@ -25,17 +29,20 @@ def menu_criar_classe(db):
         print("\n--- 📜 CRIAR NOVA CLASSE ---")
         nome = input("Nome da Classe: ")
         caminho = input("Caminho de Magia Primário (ex: fogo, ar): ")
-        pontos = int(input(f"Pontos no caminho {caminho}: "))
+        if caminho == '': caminho = None
+        try:
+            pontos = int(input(f"Pontos no caminho {caminho}: "))
+        except:
+            pontos = None
         
-        forca = int(input("Bônus de Força: "))
-        agi = int(input("Bônus de Agilidade: "))
-        res = int(input("Bônus de Resistência: "))
-        perc = int(input("Bônus de Percepção: "))
-        exub = int(input("Bônus de Exuberância: "))
+        # forca = int(input("Bônus de Força: "))
+        # agi = int(input("Bônus de Agilidade: "))
+        # res = int(input("Bônus de Resistência: "))
+        # perc = int(input("Bônus de Percepção: "))
+        # exub = int(input("Bônus de Exuberância: "))
+        # atributos = dict(forca= forca, agilidade=agi, resistencia=res, percepcao=perc, exuberancia=exub)
         
-        atributos = dict(forca= forca, agilidade=agi, resistencia=res, percepcao=perc, exuberancia=exub)
-        
-        print(GC.criar_classe(db, nome, caminho, pontos, atributos))
+        print(GC.criar_classe(db, nome, caminho, pontos))
         
 def menu_criar_personagem(db):
         print("\n--- 👤 CRIAR NOVO PERSONAGEM ---")
@@ -78,7 +85,7 @@ def menu_equipar(ctrl: GC):
 def menu_criar_item(db):
     print("\n--- ⛏ CRIAR NOVO ITEM ---")
     print("--- PRIMEIRO DEFINA A CATEGORIA DO ITEM --- ")
-    print("="*40)
+    print(barrinha)
     print("1. Arma ⚔")
     print("2. Armadura 🤺")
     print("3. Escudo 🛡")
@@ -133,8 +140,23 @@ def menu_criar_item(db):
 
 def menu_arena(db):
     print("\n--- ⚔️ ARENA DE SIMULAÇÃO ---")
-    aliados = [int(i.strip()) for i in input("IDs Aliados (ex: 1,2): ").split(",")]
-    oponentes = [int(i.strip()) for i in input("IDs Oponentes (ex: 3,4): ").split(",")]
+    aliados = oponentes = None
+    
+    while aliados == None and oponentes == None:
+        while aliados == None:
+            print(" -- MONTE A SUA EQUIPE DE ALIADOS --")
+            personagens = db.query(PersonagemDB).all()
+            print([f"{p.nome} |ID: [{p.id}],|" for p in personagens])
+            
+            #TODO: Necessário tratar inputs 
+            aliados = [int(i.strip()) for i in input("IDs Aliados (ex: 1,2): ").split(",")]
+            
+        while oponentes == None:
+            
+            #TODO: Necessário tratar inputs 
+            oponentes = [int(i.strip()) for i in input("IDs Oponentes (ex: 3,4): ").split(",")]
+            
+            
     qtd = int(input("Quantidade de batalhas (1 para detalhado): "))
     
     resultado = simular_arena(db, aliados, oponentes, qtd)
@@ -153,11 +175,11 @@ def menu_arena(db):
 # ==========================================
 def main():
     db = SessionLocal()
-    
     while True:
-        print("\n" + "="*40)
+
+        print(barrinha)
         print("🛡️ GERENCIADOR DE RPG DE MESA 🛡️")
-        print("="*40)
+        print(barrinha)
         print("1. Criar Raça")
         print("2. Criar Classe")
         print("3. Criar Personagem")

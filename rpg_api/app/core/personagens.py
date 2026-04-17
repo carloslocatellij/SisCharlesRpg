@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from app.core.equipamentos import Arma, Armadura, Escudo, Item
 from app.core.habilidades_magias import Magia, Habilidade, Efeito
+from math import ceil
 
 # ... (Mantenha as classes Raca e ClasseRPG exatamente como fizemos antes) ...
 
@@ -57,10 +58,23 @@ class Personagem:
             "luz": 0, "trevas": 0, "fogo": 0, "água": 0, "ar": 0, "terra": 0
         }
         self.caminhos_magia = self.caminhos_magia_base.copy()
-        
         self.magias_conhecidas: List[Magia] = []
         
         self.atualizar_atributos_totais()
+
+    def __str__(self):
+        str_representante = f"""
+        Personagem: {self.nome} {self.raca if hasattr(self.raca, '__str__') else ""} | {self.classe.nome} | {self.raca.nome} | Nível: {self.nivel} | 💚 PV: {self.pv_atual}/{self.pv_max} | PM: {self.pm_atual}/{self.pm_max}
+        🗡️ Corpo: {self.mod_atq_corpo} | 🏹 Distância: {self.mod_atq_distancia} | 🛡️ Defesa: {self.armadura.defesa if self.armadura else 0}
+        🔮 Habilidades: {self.classe.habilidades}
+        """
+
+        # Adicionar informações de efeitos ativos
+        if self.efeitos_ativos:
+            str_efeitos = ", ".join([f"{ef.nome}{ef} ({dur} turnos)" for ef, dur in self.efeitos_ativos])
+            str_representante += f" |✨ Efeitos Ativos: {str_efeitos}"
+
+        return str_representante
 
     # ... (Mantenha os métodos atualizar_atributos_totais, _calcular_status_derivados e reset_status) ...
     def atualizar_atributos_totais(self):
@@ -71,13 +85,14 @@ class Personagem:
         # Bônus de Atributos
         for attr, valor in self.raca.bonus_atributos.items():
             if attr in self.atributos_totais: self.atributos_totais[attr] += valor
-        for attr, valor in self.classe.bonus_atributos.items():
-            if attr in self.atributos_totais: self.atributos_totais[attr] += valor
+        # for attr, valor in self.classe.bonus_atributos.items():
+        #     if attr in self.atributos_totais: self.atributos_totais[attr] += valor
             
         # NOVO: Bônus de Caminhos de Magia da Classe
-        for caminho, pontos in self.classe.bonus_caminhos.items():
-            if caminho in self.caminhos_magia:
-                self.caminhos_magia[caminho] += pontos
+        if self.classe.bonus_caminhos:
+            for caminho, pontos in self.classe.bonus_caminhos.items():
+                if caminho in self.caminhos_magia:
+                    self.caminhos_magia[caminho] += pontos
                 
         self._calcular_status_derivados()
 
@@ -88,10 +103,17 @@ class Personagem:
         forca = self.atributos_totais["forca"]
         agi = self.atributos_totais["agilidade"]
 
-        self.pv_max = int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
-        self.pm_max = int((((self.nivel + 5) / 5) * ((perc + exub + 0.5) / 1.5)) ** 2)
-        self.mod_atq_corpo = int((((self.nivel + 5) / 5) * (forca + (agi / 2))) ** 2)
-        self.mod_atq_distancia = int((((self.nivel + 5) / 5) * (agi + (forca / 2))) ** 2)
+        self.pv_max =  int(6+ (ceil(self.nivel * ceil(res+2 / 2) + ceil(self.nivel *4)))) #int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
+        self.pm_max =  int((ceil((self.nivel + 5) / 4) * ceil((perc + exub + 0.5) / 1.5)) * 3) #int((((self.nivel + 5) / 5) * ((perc + exub + 0.5) / 1.5)) ** 2)
+        self.mod_atq_corpo = int(self.nivel * ceil(forca + (agi / 2))) #int((((self.nivel + 5) / 5) * (forca + (agi / 2))) ** 2)
+        self.mod_atq_distancia = int(self.nivel * ceil(agi + (forca / 2))) #int((((self.nivel + 5) / 5) * (agi + (forca / 2))) ** 2)
+        
+        # self.pv_max =  int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
+        # self.pm_max =  int((((self.nivel + 5) / 5) * ((perc + exub + 0.5) / 1.5)) ** 2)
+        # self.mod_atq_corpo = int((((self.nivel + 5) / 5) * (forca + (agi / 2))) ** 2)
+        # self.mod_atq_distancia = int((((self.nivel + 5) / 5) * (agi + (forca / 2))) ** 2)
+        
+        
         self.reset_status()
 
     def reset_status(self):
