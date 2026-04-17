@@ -23,5 +23,5 @@ windos `.\.venv\Scripts\activate` linux `source .venv/bin/activate`
 4.1 - Baixe e instale:
 `pip install -r requirements.txt`
 
-4 Na pasta do projeto rode:
+5 - Na pasta do projeto rode:
 `python ./rpg_api/main_cli.py`

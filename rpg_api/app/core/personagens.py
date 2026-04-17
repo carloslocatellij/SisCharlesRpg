@@ -103,7 +103,7 @@ class Personagem:
         forca = self.atributos_totais["forca"]
         agi = self.atributos_totais["agilidade"]
 
-        self.pv_max =  int(6+ (ceil(self.nivel * ceil(res+2 / 2) + ceil(self.nivel *4)))) #int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
+        self.pv_max =  int(7+ (ceil(self.nivel * ceil(res+2 / 2) + ceil((self.nivel) *3)))) #int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
         self.pm_max =  int((ceil((self.nivel + 5) / 4) * ceil((perc + exub + 0.5) / 1.5)) * 3) #int((((self.nivel + 5) / 5) * ((perc + exub + 0.5) / 1.5)) ** 2)
         self.mod_atq_corpo = int(self.nivel * ceil(forca + (agi / 2))) #int((((self.nivel + 5) / 5) * (forca + (agi / 2))) ** 2)
         self.mod_atq_distancia = int(self.nivel * ceil(agi + (forca / 2))) #int((((self.nivel + 5) / 5) * (agi + (forca / 2))) ** 2)
@@ -132,9 +132,9 @@ class Personagem:
     def calcular_defesa_esquiva(self) -> int:
         """1d6 + Agilidade + Defesa do Escudo (se houver)."""
         agi = self.atributos_totais["agilidade"]
-        rolagem = self._rolar_d6(1)
+        rolagem = self._rolar_d6(3)
         bonus_escudo = self.mao_esquerda.defesa_extra if isinstance(self.mao_esquerda, Escudo) else 0
-        return rolagem + agi + bonus_escudo
+        return rolagem + (agi * (bonus_escudo+1))
 
     def receber_dano(self, dano_bruto: int) -> Dict[str, Any]:
         """Processa a absorção de dano (1d6 por Res + Armadura)."""
