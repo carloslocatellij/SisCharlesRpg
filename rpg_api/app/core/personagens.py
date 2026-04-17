@@ -103,8 +103,8 @@ class Personagem:
         forca = self.atributos_totais["forca"]
         agi = self.atributos_totais["agilidade"]
 
-        self.pv_max =  int(7+ (ceil(self.nivel * ceil(res+2 / 2) + ceil((self.nivel) *3)))) #int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
-        self.pm_max =  int((ceil((self.nivel + 5) / 4) * ceil((perc + exub + 0.5) / 1.5)) * 3) #int((((self.nivel + 5) / 5) * ((perc + exub + 0.5) / 1.5)) ** 2)
+        self.pv_max =  int(7+ (ceil(self.nivel * ceil(res+2 / 2) + ceil((self.nivel + res) *3)))) #int((((self.nivel + 4) / 4) * (res + 1.5)) ** 2)
+        self.pm_max =  int((ceil((self.nivel + 5) / 4) * ceil((perc + exub + 1) / 2)) * 3) #int((((self.nivel + 5) / 5) * ((perc + exub + 0.5) / 1.5)) ** 2)
         self.mod_atq_corpo = int(self.nivel * ceil(forca + (agi / 2))) #int((((self.nivel + 5) / 5) * (forca + (agi / 2))) ** 2)
         self.mod_atq_distancia = int(self.nivel * ceil(agi + (forca / 2))) #int((((self.nivel + 5) / 5) * (agi + (forca / 2))) ** 2)
         
@@ -139,7 +139,7 @@ class Personagem:
     def receber_dano(self, dano_bruto: int) -> Dict[str, Any]:
         """Processa a absorção de dano (1d6 por Res + Armadura)."""
         res = self.atributos_totais["resistencia"]
-        absorcao_dados = self._rolar_d6(res)
+        absorcao_dados = self._rolar_d6((res+1)/2) 
         bonus_armadura = self.armadura.defesa if self.armadura else 0
         
         defesa_total = absorcao_dados + bonus_armadura
