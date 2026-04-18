@@ -18,7 +18,7 @@ class ClasseRPG:
     nome: str
     bonus_caminhos: Dict[str, int] = field(default_factory=dict) # Agora é um dicionário! Ex: {"fogo": 1}
     habilidades: List[str] = field(default_factory=list)
-    bonus_atributos: Dict[str, int] = field(default_factory=dict)
+    #bonus_atributos: Dict[str, int] = field(default_factory=dict)
 
 # ==========================================
 # DOMÍNIO: PERSONAGEM PRINCIPAL
@@ -139,7 +139,7 @@ class Personagem:
     def receber_dano(self, dano_bruto: int) -> Dict[str, Any]:
         """Processa a absorção de dano (1d6 por Res + Armadura)."""
         res = self.atributos_totais["resistencia"]
-        absorcao_dados = self._rolar_d6((res+1)/2) 
+        absorcao_dados = self._rolar_d6((res+1) // 2) # Cada 2 pontos de Resistencia dão direito a 1d6 de absorção
         bonus_armadura = self.armadura.defesa if self.armadura else 0
         
         defesa_total = absorcao_dados + bonus_armadura

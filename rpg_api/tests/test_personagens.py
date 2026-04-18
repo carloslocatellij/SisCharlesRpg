@@ -13,8 +13,8 @@ def test_criacao_raca_e_classe():
 
 def test_calculo_atributos_totais_personagem():
     """Testa se o Personagem soma corretamente os atributos base + raça + classe."""
-    raca_elfo = Raca(nome="elven", bonus_atributos={"agilidade": 2, "percepcao": 1})
-    classe_mago = ClasseRPG(nome="magee", bonus_atributos={"exuberancia": 2})
+    raca_elfo = Raca(nome="elven", bonus_atributos={"agilidade": 2, "percepcao": 1, "exuberancia": 2})
+    classe_mago = ClasseRPG(nome="magee")
     
     # Herói com tudo zero na base, para isolar e testar os bônus
     heroi = Personagem(
@@ -30,7 +30,7 @@ def test_calculo_atributos_totais_personagem():
 def test_formulas_status_derivados():
     """Testa a integridade das fórmulas matemáticas de PV e PM do MANUAL.md."""
     raca_humano = Raca(nome="human", bonus_atributos={})
-    classe_comum = ClasseRPG(nome="Camponês", bonus_atributos={})
+    classe_comum = ClasseRPG(nome="Camponês")
     
     # Nivel 1, Todos atributos = 2
     heroi = Personagem(
@@ -38,14 +38,12 @@ def test_formulas_status_derivados():
         forca_base=2, agilidade_base=2, res_base=2, perc_base=2, exub_base=2
     )
     
-    # Teste de Pontos de Vida: ((1+4)/4) * (2+1.5) ^ 2
-    # = (1.25 * 3.5) ^ 2 = 4.375 ^ 2 = 19.14 (com int() deve ser 19)
+    #pv = int(7+ (ceil(self.nivel * ceil(res+2 / 2) + ceil((self.nivel + res) *3))))
     assert heroi.pv_max == 19
     assert heroi.pv_atual == 19
     
-    # Teste de Modificador de Ataque Corpo a Corpo: ((1+5)/5) * (2 + (2/2)) ^ 2
-    # = (1.2 * 3) ^ 2 = 3.6 ^ 2 = 12.96 (com int() deve ser 12)
-    assert heroi.mod_atq_corpo == 12
+    # atq = int(self.nivel * ceil(forca + (agi / 2))) deve ser 3)
+    assert heroi.mod_atq_corpo == 3
 
 def test_equipamento_inventario():
     """Garante que a agregação com a camada de equipamentos funciona."""

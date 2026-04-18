@@ -156,9 +156,10 @@ def simular_arena(db, ids_aliados: List[int], ids_oponentes: List[int], num_bata
         return simulador.simular_batalha(silencioso=False)
     else:
         print("\n📊 ESTATÍSTICAS DA BATALHA:")
+        relatorio = simulador.simular_multiplas_batalhas(num_batalhas)
         
-        for nome, stats in relatorio["estatisticas"].items():
-            print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
+        #for nome, stats in relatorio.items():
+        #    print(f" - {nome}: {stats['dano_causado']} Dano, {stats['abates']} Abates")
             
         return simulador.simular_multiplas_batalhas(num_batalhas)
         

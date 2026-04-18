@@ -52,7 +52,11 @@ def menu_criar_personagem(db):
         raca_id = int(input("ID da Raça escolhida: "))
         
         # Lista Classes
-        classes = db.query(ClasseRPGDB).all()
+        try:
+            classes = db.query(ClasseRPGDB).all()
+        except Exception as e:
+            print(f"❌ Ocorreu um erro ao buscar as classes: {e}")
+            return
         print("\nClasses disponíveis:")
         for c in classes: print(f"[{c.id}] {c.nome}")
         classe_id = int(input("ID da Classe escolhida: "))
@@ -146,7 +150,7 @@ def menu_arena(db):
         while aliados == None:
             print(" -- MONTE A SUA EQUIPE DE ALIADOS --")
             personagens = db.query(PersonagemDB).all()
-            print([f"{p.nome} |ID: [{p.id}],|" for p in personagens])
+            print([f"{p.nome} -ID:[{p.id}]" for p in personagens])
             
             #TODO: Necessário tratar inputs 
             aliados = [int(i.strip()) for i in input("IDs Aliados (ex: 1,2): ").split(",")]
